@@ -1,0 +1,78 @@
+<div class="pixel-sky" aria-hidden="true">
+  <span class="sky-pixel pixel-a"></span>
+  <span class="sky-pixel pixel-b"></span>
+  <span class="sky-pixel pixel-c"></span>
+  <span class="sky-pixel pixel-d"></span>
+  <span class="sky-pixel pixel-e"></span>
+  <span class="pixel-mountains mountains-far"></span>
+  <span class="pixel-mountains mountains-near"></span>
+</div>
+<div class="noise-layer" aria-hidden="true"></div>
+
+<header class="site-header">
+  <a class="brand" routerLink="/" aria-label="Ir al inicio">
+    <span class="brand-mark">
+      <img class="brand-avatar brand-avatar--retro" [src]="profile.avatar" alt="" />
+      <img class="brand-avatar brand-avatar--modern" [src]="profile.modernAvatar" alt="" />
+    </span>
+    <span>{{ profile.name }}</span>
+  </a>
+
+  <div class="header-actions">
+    <nav class="nav" aria-label="Navegacion principal">
+      <a routerLink="/experiencia" routerLinkActive="active">Experiencia</a>
+      <a routerLink="/skills" routerLinkActive="active">Skills</a>
+      <a routerLink="/proyectos" routerLinkActive="active">Proyectos</a>
+      <a routerLink="/educacion" routerLinkActive="active">Educacion</a>
+      <a routerLink="/contacto" routerLinkActive="active">Contacto</a>
+    </nav>
+
+    <div class="header-tools" aria-label="Preferencias">
+      <button
+        class="theme-toggle"
+        type="button"
+        (click)="toggleTheme()"
+        [attr.aria-pressed]="isLightMode"
+        [attr.aria-label]="isLightMode ? 'Cambiar a dark mode' : 'Cambiar a light mode'"
+      >
+        <span class="theme-toggle__icon" aria-hidden="true"></span>
+      </button>
+
+      <button class="locale-control" type="button" (click)="toggleLanguage()" [attr.aria-label]="currentLanguageLabel">
+        <span class="locale-control__icon" aria-hidden="true">
+          <span>A</span>
+          <span>☆</span>
+        </span>
+        <span class="locale-control__text">{{ languageMode === 'en' ? 'English' : 'Español' }}</span>
+        <span class="locale-control__chevron" aria-hidden="true"></span>
+      </button>
+
+      <button
+        class="version-toggle"
+        type="button"
+        (click)="toggleViewMode()"
+        [attr.aria-pressed]="isRetroMode"
+        [attr.aria-label]="currentViewModeLabel"
+      >
+        {{ viewMode === 'modern' ? '8-bit' : 'Modern' }}
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="nav mobile-nav" aria-label="Navegacion principal">
+  <a routerLink="/experiencia" routerLinkActive="active" data-short="Experiencia">Experiencia</a>
+  <a routerLink="/skills" routerLinkActive="active" data-short="Skills">Skills</a>
+  <a routerLink="/proyectos" routerLinkActive="active" data-short="Proyectos">Proyectos</a>
+  <a routerLink="/educacion" routerLinkActive="active" data-short="Educacion">Educacion</a>
+  <a routerLink="/contacto" routerLinkActive="active" data-short="Contacto">Contacto</a>
+</nav>
+
+<main>
+  <router-outlet />
+</main>
+
+<footer class="footer">
+  <span>{{ profile.name }}</span>
+  <span>{{ profile.role }} | Portfolio</span>
+</footer>

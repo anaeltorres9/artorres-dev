@@ -1,0 +1,19 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #05070c;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #05070c;
+}
+
+::selection {
+  background: rgba(31, 111, 235, 0.42);
+  color: #ffffff;
+}

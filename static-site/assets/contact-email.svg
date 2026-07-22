@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Email">
+  <defs>
+    <linearGradient id="emailGradient" x1="12" x2="52" y1="10" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#65f7ff"/>
+      <stop offset="0.48" stop-color="#7c5cff"/>
+      <stop offset="1" stop-color="#ff5fd2"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="18" fill="url(#emailGradient)"/>
+  <path fill="#fff" d="M16 21.5A4.5 4.5 0 0 1 20.5 17h23A4.5 4.5 0 0 1 48 21.5v21a4.5 4.5 0 0 1-4.5 4.5h-23A4.5 4.5 0 0 1 16 42.5v-21Zm4.7-.5 10.1 9.1a1.8 1.8 0 0 0 2.4 0L43.3 21H20.7Zm23.8 4.1-8.9 8a5.5 5.5 0 0 1-7.2 0l-8.9-8v17.1c0 .5.4.9.9.9h23.2c.5 0 .9-.4.9-.9V25.1Z"/>
+</svg>

@@ -1,0 +1,219 @@
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
+
+const root = process.cwd();
+const sourceDir = path.join(root, 'static-site');
+const distDir = path.join(root, 'dist');
+const outputDir = path.join(distDir, 'portfolio-ready');
+const serverDir = path.join(distDir, 'server');
+const serverEntry = path.join(serverDir, 'index.js');
+
+const htmlPages = [
+  'index.html',
+  'experiencia/index.html',
+  'skills/index.html',
+  'proyectos/index.html',
+  'educacion/index.html',
+  'contacto/index.html',
+];
+
+const requiredStaticFiles = ['_headers', 'vercel.json', 'styles.css', 'pixel-title.js', 'theme-toggle.js'];
+const publicRoutes = new Set(['experiencia', 'experiencia/', 'skills', 'skills/', 'proyectos', 'proyectos/', 'educacion', 'educacion/', 'contacto', 'contacto/']);
+const forbiddenNames = new Set(['.DS_Store']);
+
+const failures = [];
+
+function fail(message) {
+  failures.push(message);
+}
+
+function walkFiles(dir, relativeBase = '') {
+  return readdirSync(dir).flatMap((entry) => {
+    const absolute = path.join(dir, entry);
+    const relative = path.join(relativeBase, entry);
+    const stats = statSync(absolute);
+
+    if (stats.isDirectory()) {
+      return walkFiles(absolute, relative);
+    }
+
+    return [relative];
+  });
+}
+
+function validateNoLocalMetadata() {
+  walkFiles(sourceDir).forEach((file) => {
+    if (forbiddenNames.has(path.basename(file))) {
+      fail(`Archivo local no publicable: ${file}`);
+    }
+  });
+}
+
+function validateRequiredFiles() {
+  requiredStaticFiles.forEach((file) => {
+    if (!existsSync(path.join(sourceDir, file))) {
+      fail(`Falta archivo requerido: ${file}`);
+    }
+  });
+
+  htmlPages.forEach((file) => {
+    if (!existsSync(path.join(sourceDir, file))) {
+      fail(`Falta pagina requerida: ${file}`);
+    }
+  });
+
+  try {
+    JSON.parse(readFileSync(path.join(sourceDir, 'vercel.json'), 'utf8'));
+  } catch (error) {
+    fail(`vercel.json invalido: ${error.message}`);
+  }
+}
+
+function validateHtmlReferences() {
+  htmlPages.forEach((file) => {
+    const html = readFileSync(path.join(sourceDir, file), 'utf8');
+
+    if (/<script(?![^>]*\ssrc=)/i.test(html)) {
+      fail(`${file}: contiene script inline`);
+    }
+
+    for (const match of html.matchAll(/(?:src|href)="\/([^"#?]+)(?:[?#][^"]*)?"/g)) {
+      const ref = match[1];
+
+      if (publicRoutes.has(ref)) {
+        continue;
+      }
+
+      if (!existsSync(path.join(sourceDir, ref))) {
+        fail(`${file}: referencia inexistente /${ref}`);
+      }
+    }
+  });
+}
+
+function validateHeaders() {
+  const headers = readFileSync(path.join(sourceDir, '_headers'), 'utf8');
+
+  [
+    'Content-Security-Policy',
+    "script-src 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    'X-Content-Type-Options: nosniff',
+    'X-Frame-Options: DENY',
+    'Referrer-Policy',
+    'Permissions-Policy',
+  ].forEach((needle) => {
+    if (!headers.includes(needle)) {
+      fail(`_headers incompleto: falta ${needle}`);
+    }
+  });
+}
+
+function validateStaticSite() {
+  validateRequiredFiles();
+  validateNoLocalMetadata();
+  validateHtmlReferences();
+  validateHeaders();
+
+  if (failures.length) {
+    console.error(failures.join('\n'));
+    process.exit(1);
+  }
+}
+
+function copyForDeploy() {
+  rmSync(distDir, { recursive: true, force: true });
+  mkdirSync(outputDir, { recursive: true });
+  cpSync(sourceDir, outputDir, {
+    recursive: true,
+    filter: (source) => !forbiddenNames.has(path.basename(source)),
+  });
+  writeFileSync(path.join(outputDir, '.nojekyll'), '');
+}
+
+function writeSitesWorker() {
+  mkdirSync(serverDir, { recursive: true });
+  writeFileSync(path.join(serverDir, 'package.json'), '{"type":"module"}\n');
+  writeFileSync(
+    serverEntry,
+    `const securityHeaders = {
+  'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests",
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), fullscreen=(self)',
+};
+
+function withSecurityHeaders(response) {
+  const headers = new Headers(response.headers);
+  Object.entries(securityHeaders).forEach(([key, value]) => headers.set(key, value));
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+function safePath(pathname) {
+  const normalized = pathname.replace(/\\\\+/g, '/');
+  if (normalized.includes('..') || /%2e|%5c/i.test(pathname)) {
+    return null;
+  }
+  return normalized.startsWith('/') ? normalized : \`/\${normalized}\`;
+}
+
+function candidatesFor(pathname, acceptsHtml) {
+  const cleanPath = safePath(pathname);
+  if (!cleanPath) {
+    return [];
+  }
+
+  if (cleanPath === '/') {
+    return ['/portfolio-ready/index.html'];
+  }
+
+  const candidates = [\`/portfolio-ready\${cleanPath}\`];
+  const hasExtension = /\\/[^/]+\\.[^/]+$/.test(cleanPath);
+
+  if (!hasExtension) {
+    candidates.push(\`/portfolio-ready\${cleanPath.replace(/\\/$/, '')}/index.html\`);
+  }
+
+  if (acceptsHtml) {
+    candidates.push('/portfolio-ready/index.html');
+  }
+
+  return [...new Set(candidates)];
+}
+
+export default {
+  async fetch(request, env) {
+    if (request.method !== 'GET' && request.method !== 'HEAD') {
+      return withSecurityHeaders(new Response('Method not allowed', { status: 405 }));
+    }
+
+    const url = new URL(request.url);
+    const acceptsHtml = request.headers.get('accept')?.includes('text/html') ?? false;
+
+    for (const candidate of candidatesFor(url.pathname, acceptsHtml)) {
+      const assetUrl = new URL(candidate, request.url);
+      const response = await env.ASSETS.fetch(new Request(assetUrl, request));
+
+      if (response.status !== 404) {
+        return withSecurityHeaders(response);
+      }
+    }
+
+    return withSecurityHeaders(new Response('Not found', { status: 404 }));
+  },
+};
+`,
+  );
+}
+
+validateStaticSite();
+copyForDeploy();
+writeSitesWorker();
+
+console.log(`Portfolio listo para subir en ${path.relative(root, outputDir)}`);
