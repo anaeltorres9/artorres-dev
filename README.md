@@ -32,6 +32,23 @@ Esa es la carpeta que se puede subir a Vercel, Netlify, Cloudflare Pages o cualq
 
 Vercel y Netlify ya estan configurados para instalar solo dependencias productivas durante la publicacion y servir `dist/portfolio-ready`.
 
+Tambien genera `docs/`, preparada para publicar gratis en GitHub Pages desde el repo `anaeltorres9/artorres-dev`.
+
+Para activar GitHub Pages:
+
+1. Entrar al repo en GitHub.
+2. Ir a `Settings`.
+3. Abrir `Pages`.
+4. En `Build and deployment`, elegir `Deploy from a branch`.
+5. Seleccionar branch `main` y carpeta `/docs`.
+6. Guardar.
+
+La URL gratuita queda:
+
+```text
+https://anaeltorres9.github.io/artorres-dev/
+```
+
 ## Seguridad incluida
 
 El sitio publicable incluye:

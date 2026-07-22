@@ -5,8 +5,10 @@ const root = process.cwd();
 const sourceDir = path.join(root, 'static-site');
 const distDir = path.join(root, 'dist');
 const outputDir = path.join(distDir, 'portfolio-ready');
+const githubPagesDir = path.join(root, 'docs');
 const serverDir = path.join(distDir, 'server');
 const serverEntry = path.join(serverDir, 'index.js');
+const githubPagesBasePath = '/artorres-dev';
 
 const htmlPages = [
   'index.html',
@@ -124,12 +126,35 @@ function validateStaticSite() {
 
 function copyForDeploy() {
   rmSync(distDir, { recursive: true, force: true });
+  rmSync(githubPagesDir, { recursive: true, force: true });
+  cpSync(sourceDir, distDir, {
+    recursive: true,
+    filter: (source) => !forbiddenNames.has(path.basename(source)),
+  });
   mkdirSync(outputDir, { recursive: true });
   cpSync(sourceDir, outputDir, {
     recursive: true,
     filter: (source) => !forbiddenNames.has(path.basename(source)),
   });
   writeFileSync(path.join(outputDir, '.nojekyll'), '');
+}
+
+function prepareGithubPages() {
+  mkdirSync(githubPagesDir, { recursive: true });
+  cpSync(sourceDir, githubPagesDir, {
+    recursive: true,
+    filter: (source) => !forbiddenNames.has(path.basename(source)),
+  });
+
+  htmlPages.forEach((file) => {
+    const pagePath = path.join(githubPagesDir, file);
+    const html = readFileSync(pagePath, 'utf8')
+      .replaceAll('href="/', `href="${githubPagesBasePath}/`)
+      .replaceAll('src="/', `src="${githubPagesBasePath}/`);
+    writeFileSync(pagePath, html);
+  });
+
+  writeFileSync(path.join(githubPagesDir, '.nojekyll'), '');
 }
 
 function writeSitesWorker() {
@@ -169,22 +194,28 @@ function candidatesFor(pathname, acceptsHtml) {
     return [];
   }
 
+  const prefixes = ['', '/portfolio-ready'];
+  const candidates = [];
+
   if (cleanPath === '/') {
-    return ['/portfolio-ready/index.html'];
+    return prefixes.map((prefix) => \`\${prefix}/index.html\`);
   }
 
-  const candidates = [\`/portfolio-ready\${cleanPath}\`];
   const hasExtension = /\\/[^/]+\\.[^/]+$/.test(cleanPath);
 
-  if (!hasExtension) {
-    candidates.push(\`/portfolio-ready\${cleanPath.replace(/\\/$/, '')}/index.html\`);
-  }
+  prefixes.forEach((prefix) => {
+    candidates.push(\`\${prefix}\${cleanPath}\`);
 
-  if (acceptsHtml) {
-    candidates.push('/portfolio-ready/index.html');
-  }
+    if (!hasExtension) {
+      candidates.push(\`\${prefix}\${cleanPath.replace(/\\/$/, '')}/index.html\`);
+    }
 
-  return [...new Set(candidates)];
+    if (acceptsHtml) {
+      candidates.push(\`\${prefix}/index.html\`);
+    }
+  });
+
+  return [...new Set(candidates.filter(Boolean))];
 }
 
 export default {
@@ -214,6 +245,7 @@ export default {
 
 validateStaticSite();
 copyForDeploy();
+prepareGithubPages();
 writeSitesWorker();
 
 console.log(`Portfolio listo para subir en ${path.relative(root, outputDir)}`);
