@@ -5,6 +5,7 @@ const root = process.cwd();
 const sourceDir = path.join(root, 'static-site');
 const distDir = path.join(root, 'dist');
 const outputDir = path.join(distDir, 'portfolio-ready');
+const netlifyOutputDir = path.join(distDir, 'portfolio-freelance', 'browser');
 const githubPagesDir = path.join(root, 'docs');
 const serverDir = path.join(distDir, 'server');
 const serverEntry = path.join(serverDir, 'index.js');
@@ -127,16 +128,25 @@ function validateStaticSite() {
 function copyForDeploy() {
   rmSync(distDir, { recursive: true, force: true });
   rmSync(githubPagesDir, { recursive: true, force: true });
+
   cpSync(sourceDir, distDir, {
     recursive: true,
     filter: (source) => !forbiddenNames.has(path.basename(source)),
   });
+
   mkdirSync(outputDir, { recursive: true });
   cpSync(sourceDir, outputDir, {
     recursive: true,
     filter: (source) => !forbiddenNames.has(path.basename(source)),
   });
   writeFileSync(path.join(outputDir, '.nojekyll'), '');
+
+  mkdirSync(netlifyOutputDir, { recursive: true });
+  cpSync(sourceDir, netlifyOutputDir, {
+    recursive: true,
+    filter: (source) => !forbiddenNames.has(path.basename(source)),
+  });
+  writeFileSync(path.join(netlifyOutputDir, '.nojekyll'), '');
 }
 
 function prepareGithubPages() {

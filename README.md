@@ -30,7 +30,9 @@ dist/portfolio-ready
 
 Esa es la carpeta que se puede subir a Vercel, Netlify, Cloudflare Pages o cualquier hosting estatico.
 
-Vercel y Netlify ya estan configurados para instalar solo dependencias productivas durante la publicacion y servir `dist/portfolio-ready`.
+Vercel esta configurado para servir `dist/portfolio-ready`.
+
+Netlify esta configurado para servir `dist/portfolio-freelance/browser`, que el build genera con la misma version estatica. Esa ruta evita el error del plugin automatico `@netlify/angular-runtime`.
 
 Tambien genera `docs/`, preparada para publicar gratis en GitHub Pages desde el repo `anaeltorres9/artorres-dev`.
 
