@@ -1004,18 +1004,28 @@ main,
   min-height: clamp(31rem, 62vh, 40rem);
   border-color: var(--line);
   background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.08), transparent 28%, rgba(101, 216, 255, 0.05) 72%, transparent),
     radial-gradient(circle at 18% 18%, rgba(124, 92, 255, 0.28), transparent 20rem),
     radial-gradient(circle at 78% 16%, rgba(101, 216, 255, 0.18), transparent 18rem),
     linear-gradient(135deg, rgba(16, 22, 35, 0.94), rgba(8, 10, 16, 0.82));
+  box-shadow:
+    0 28px 90px rgba(3, 7, 18, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 0 1px rgba(101, 216, 255, 0.06);
   isolation: isolate;
   perspective: 1200px;
 }
 
 :root[data-view="modern"][data-theme="light"] .pixel-stage {
   background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.78), transparent 32%, rgba(37, 99, 235, 0.05) 72%, transparent),
     radial-gradient(circle at 18% 18%, rgba(124, 92, 255, 0.14), transparent 20rem),
     radial-gradient(circle at 78% 16%, rgba(8, 145, 178, 0.12), transparent 18rem),
     linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.78));
+  box-shadow:
+    0 24px 70px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    inset 0 0 0 1px rgba(37, 99, 235, 0.05);
 }
 
 :root[data-view="modern"] .pixel-stage .crt-card {
@@ -1038,7 +1048,9 @@ main,
 
 :root[data-view="modern"] .premium-scene[hidden],
 .premium-scene,
-.premium-orbit {
+.premium-orbit,
+.premium-grid-floor,
+.premium-hud {
   display: none;
 }
 
@@ -1071,10 +1083,105 @@ main,
   animation: orbitDrift 14s ease-in-out infinite reverse;
 }
 
+:root[data-view="modern"] .premium-grid-floor {
+  position: absolute;
+  right: -8%;
+  bottom: -17%;
+  left: -8%;
+  z-index: 1;
+  display: block;
+  height: 48%;
+  background:
+    linear-gradient(rgba(101, 216, 255, 0.28) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(182, 108, 255, 0.26) 1px, transparent 1px);
+  background-size: 38px 38px;
+  filter: drop-shadow(0 0 18px rgba(101, 216, 255, 0.14));
+  mask-image: linear-gradient(180deg, transparent, #000 28%, #000 72%, transparent);
+  opacity: 0.28;
+  pointer-events: none;
+  transform: perspective(780px) rotateX(63deg);
+  transform-origin: 50% 100%;
+}
+
+:root[data-view="modern"][data-theme="light"] .premium-grid-floor {
+  background:
+    linear-gradient(rgba(37, 99, 235, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 92, 255, 0.16) 1px, transparent 1px);
+  opacity: 0.22;
+}
+
+:root[data-view="modern"] .premium-hud {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  width: min(18vw, 11.5rem);
+  height: min(12vw, 7.5rem);
+  border-color: rgba(101, 216, 255, 0.24);
+  border-style: solid;
+  pointer-events: none;
+}
+
+:root[data-view="modern"] .premium-hud--left {
+  top: 1.15rem;
+  left: 1.15rem;
+  border-width: 1px 0 0 1px;
+}
+
+:root[data-view="modern"] .premium-hud--right {
+  right: 1.15rem;
+  bottom: 1.15rem;
+  border-width: 0 1px 1px 0;
+}
+
 :root[data-view="modern"] .hero-copy,
 :root[data-view="modern"] .game-preview {
   position: relative;
   z-index: 2;
+}
+
+:root[data-view="modern"] .pixel-stage .hero-copy,
+:root[data-view="modern"] .pixel-stage .game-preview {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035) 48%, rgba(124, 92, 255, 0.08)),
+    rgba(11, 16, 32, 0.52);
+  backdrop-filter: blur(18px) saturate(1.22);
+  -webkit-backdrop-filter: blur(18px) saturate(1.22);
+  box-shadow:
+    0 24px 70px rgba(3, 7, 18, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  padding: clamp(1.25rem, 3vw, 2.15rem);
+}
+
+:root[data-view="modern"][data-theme="light"] .pixel-stage .hero-copy,
+:root[data-view="modern"][data-theme="light"] .pixel-stage .game-preview {
+  border-color: rgba(15, 23, 42, 0.08);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.66) 48%, rgba(37, 99, 235, 0.05)),
+    rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 24px 58px rgba(15, 23, 42, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+:root[data-view="modern"] .hero-copy::after,
+:root[data-view="modern"] .game-preview::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(120deg, rgba(101, 216, 255, 0.18), transparent 26%, transparent 74%, rgba(255, 95, 210, 0.1)),
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: auto, auto 9px;
+  content: "";
+  opacity: 0.58;
+  pointer-events: none;
+}
+
+:root[data-view="modern"] .hero-copy > *,
+:root[data-view="modern"] .game-preview > * {
+  position: relative;
+  z-index: 1;
 }
 
 :root[data-view="modern"] .eyebrow,
@@ -1260,6 +1367,7 @@ main,
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
   margin-top: 1rem;
+  perspective: 1000px;
 }
 
 :root[data-view="modern"] .menu-card,
@@ -2903,6 +3011,20 @@ app-pixel-heading {
     min-height: auto;
   }
 
+  :root[data-view="modern"] .premium-scene {
+    opacity: 0.58;
+  }
+
+  :root[data-view="modern"] .premium-grid-floor {
+    bottom: -21%;
+    height: 38%;
+    opacity: 0.18;
+  }
+
+  :root[data-view="modern"] .premium-hud {
+    display: none;
+  }
+
   :root[data-view="modern"] .console-panel {
     width: min(100%, 28rem);
     justify-self: center;
@@ -2964,12 +3086,21 @@ app-pixel-heading {
   }
 
   :root[data-view="modern"] .avatar-frame {
-    min-height: 14rem;
+    min-height: 11rem;
   }
 
   :root[data-view="modern"] .avatar-image {
-    width: min(13rem, 76%);
-    height: min(13rem, 76%);
+    width: min(9.6rem, 68%);
+    height: min(9.6rem, 68%);
+  }
+
+  :root[data-view="modern"] .pixel-stage .hero-copy,
+  :root[data-view="modern"] .pixel-stage .game-preview {
+    padding: 1.15rem;
+  }
+
+  :root[data-view="modern"] .game-preview .save-slot {
+    display: none;
   }
 }
 
@@ -3543,7 +3674,9 @@ app-pixel-heading {
 
   :root[data-view="modern"] body::before,
   :root[data-view="modern"] .premium-scene,
-  :root[data-view="modern"] .premium-orbit {
+  :root[data-view="modern"] .premium-orbit,
+  :root[data-view="modern"] .premium-grid-floor,
+  :root[data-view="modern"] .premium-hud {
     display: none !important;
   }
 
