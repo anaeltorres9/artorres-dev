@@ -229,7 +229,7 @@ function candidatesFor(pathname, acceptsHtml) {
     return [];
   }
 
-  const prefixes = ['', '/portfolio-ready'];
+  const prefixes = ['', '/dist', '/portfolio-ready', '/dist/portfolio-ready'];
   const candidates = [];
 
   if (cleanPath === '/') {
