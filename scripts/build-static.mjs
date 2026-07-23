@@ -4,6 +4,7 @@ import path from 'node:path';
 const root = process.cwd();
 const sourceDir = path.join(root, 'static-site');
 const distDir = path.join(root, 'dist');
+const clientOutputDir = path.join(distDir, 'client');
 const outputDir = path.join(distDir, 'portfolio-ready');
 const netlifyOutputDir = path.join(distDir, 'portfolio-freelance', 'browser');
 const githubPagesDir = path.join(root, 'docs');
@@ -159,6 +160,12 @@ function copyForDeploy() {
     filter: (source) => !forbiddenNames.has(path.basename(source)),
   });
 
+  mkdirSync(clientOutputDir, { recursive: true });
+  cpSync(sourceDir, clientOutputDir, {
+    recursive: true,
+    filter: (source) => !forbiddenNames.has(path.basename(source)),
+  });
+
   mkdirSync(outputDir, { recursive: true });
   cpSync(sourceDir, outputDir, {
     recursive: true,
@@ -229,7 +236,7 @@ function candidatesFor(pathname, acceptsHtml) {
     return [];
   }
 
-  const prefixes = ['', '/dist', '/portfolio-ready', '/dist/portfolio-ready'];
+  const prefixes = ['', '/client', '/dist', '/dist/client', '/portfolio-ready', '/dist/portfolio-ready'];
   const candidates = [];
 
   if (cleanPath === '/') {
