@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/styles.css?v=version-toggle-1" />
     <script src="/pixel-title.js?v=i18n-1" defer></script>
     <script src="/theme-toggle.js?v=version-toggle-1" defer></script>
+    <script type="module" src="/retro-scene.js?v=3d-1"></script>
   </head>
   <body>
     <div class="pixel-sky" aria-hidden="true">
@@ -66,7 +67,11 @@
 
     <main>
       <section class="screen home-screen pixel-stage" aria-labelledby="hero-title">
-        <div class="crt-card hero-copy">
+        <canvas class="premium-scene" data-premium-scene aria-hidden="true" hidden></canvas>
+        <div class="premium-orbit premium-orbit--one" aria-hidden="true"></div>
+        <div class="premium-orbit premium-orbit--two" aria-hidden="true"></div>
+
+        <div class="crt-card hero-copy" data-tilt-card>
           <p class="eyebrow">PRESS START - PORTFOLIO</p>
           <h1 id="hero-title" class="pixel-title js-pixel-title" aria-label="Anael Torres">
             <span class="fallback-title">Anael Torres</span>
@@ -86,7 +91,7 @@
           </div>
         </div>
 
-        <aside class="console-panel game-preview" aria-label="Resumen">
+        <aside class="console-panel game-preview" aria-label="Resumen" data-tilt-card>
           <div class="avatar-frame">
             <span class="pixel-snow snow-a"></span>
             <span class="pixel-snow snow-b"></span>
@@ -111,28 +116,28 @@
       </section>
 
       <section class="menu-grid" aria-label="Menu principal">
-        <a class="menu-card" href="/experiencia/">
+        <a class="menu-card" href="/experiencia/" data-tilt-card>
           <span>STAGE 01</span>
           <h2 class="pixel-title pixel-title--card js-pixel-title" aria-label="Experiencia">
             <span class="fallback-title">Experiencia</span>
           </h2>
           <p>Producto fintech, herramientas enterprise y trabajo freelance real.</p>
         </a>
-        <a class="menu-card" href="/skills/">
+        <a class="menu-card" href="/skills/" data-tilt-card>
           <span>STAGE 02</span>
           <h2 class="pixel-title pixel-title--card js-pixel-title" aria-label="Skills">
             <span class="fallback-title">Skills</span>
           </h2>
           <p>Tecnologias que uso para construir, integrar, probar y mantener.</p>
         </a>
-        <a class="menu-card" href="/proyectos/">
+        <a class="menu-card" href="/proyectos/" data-tilt-card>
           <span>STAGE 03</span>
           <h2 class="pixel-title pixel-title--card js-pixel-title" aria-label="Proyectos">
             <span class="fallback-title">Proyectos</span>
           </h2>
           <p>Casos concretos donde aporte interfaz, integracion y criterio UX.</p>
         </a>
-        <a class="menu-card" href="/educacion/">
+        <a class="menu-card" href="/educacion/" data-tilt-card>
           <span>STAGE 04</span>
           <h2 class="pixel-title pixel-title--card js-pixel-title" aria-label="Educacion">
             <span class="fallback-title">Educacion</span>

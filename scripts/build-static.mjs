@@ -10,6 +10,11 @@ const githubPagesDir = path.join(root, 'docs');
 const serverDir = path.join(distDir, 'server');
 const serverEntry = path.join(serverDir, 'index.js');
 const githubPagesBasePath = '/artorres-dev';
+const threeSourceFile = path.join(root, 'node_modules', 'three', 'build', 'three.module.min.js');
+const threeCoreSourceFile = path.join(root, 'node_modules', 'three', 'build', 'three.core.min.js');
+const vendorDir = path.join(sourceDir, 'vendor');
+const threeVendorFile = path.join(vendorDir, 'three.module.min.js');
+const threeCoreVendorFile = path.join(vendorDir, 'three.core.min.js');
 
 const htmlPages = [
   'index.html',
@@ -20,7 +25,16 @@ const htmlPages = [
   'contacto/index.html',
 ];
 
-const requiredStaticFiles = ['_headers', 'vercel.json', 'styles.css', 'pixel-title.js', 'theme-toggle.js'];
+const requiredStaticFiles = [
+  '_headers',
+  'vercel.json',
+  'styles.css',
+  'pixel-title.js',
+  'theme-toggle.js',
+  'retro-scene.js',
+  'vendor/three.module.min.js',
+  'vendor/three.core.min.js',
+];
 const publicRoutes = new Set(['experiencia', 'experiencia/', 'skills', 'skills/', 'proyectos', 'proyectos/', 'educacion', 'educacion/', 'contacto', 'contacto/']);
 const forbiddenNames = new Set(['.DS_Store']);
 
@@ -123,6 +137,17 @@ function validateStaticSite() {
     console.error(failures.join('\n'));
     process.exit(1);
   }
+}
+
+function prepareVendorAssets() {
+  if (!existsSync(threeSourceFile) || !existsSync(threeCoreSourceFile)) {
+    fail('Falta Three.js local. Ejecuta npm install antes de compilar.');
+    return;
+  }
+
+  mkdirSync(vendorDir, { recursive: true });
+  cpSync(threeSourceFile, threeVendorFile);
+  cpSync(threeCoreSourceFile, threeCoreVendorFile);
 }
 
 function copyForDeploy() {
@@ -253,6 +278,7 @@ export default {
   );
 }
 
+prepareVendorAssets();
 validateStaticSite();
 copyForDeploy();
 prepareGithubPages();

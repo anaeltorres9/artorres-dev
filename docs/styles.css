@@ -730,11 +730,30 @@ main,
   color: var(--text);
 }
 
+:root[data-view="modern"] body::before {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle at var(--cursor-x, 52%) var(--cursor-y, 28%), rgba(101, 216, 255, 0.18), transparent 22rem),
+    radial-gradient(circle at calc(var(--cursor-x, 52%) + 12%) calc(var(--cursor-y, 28%) + 8%), rgba(182, 108, 255, 0.14), transparent 24rem);
+  content: "";
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
 :root[data-view="modern"][data-theme="light"] body {
   background:
     radial-gradient(circle at 12% 8%, rgba(124, 92, 255, 0.13), transparent 28rem),
     radial-gradient(circle at 88% 4%, rgba(8, 145, 178, 0.12), transparent 26rem),
     linear-gradient(180deg, #ffffff, #f6f8fb 64%, #edf2f7);
+}
+
+:root[data-view="modern"][data-theme="light"] body::before {
+  background:
+    radial-gradient(circle at var(--cursor-x, 52%) var(--cursor-y, 28%), rgba(8, 145, 178, 0.12), transparent 22rem),
+    radial-gradient(circle at calc(var(--cursor-x, 52%) + 12%) calc(var(--cursor-y, 28%) + 8%), rgba(124, 92, 255, 0.1), transparent 24rem);
+  mix-blend-mode: multiply;
 }
 
 :root[data-view="modern"] .pixel-sky,
@@ -988,6 +1007,8 @@ main,
     radial-gradient(circle at 18% 18%, rgba(124, 92, 255, 0.28), transparent 20rem),
     radial-gradient(circle at 78% 16%, rgba(101, 216, 255, 0.18), transparent 18rem),
     linear-gradient(135deg, rgba(16, 22, 35, 0.94), rgba(8, 10, 16, 0.82));
+  isolation: isolate;
+  perspective: 1200px;
 }
 
 :root[data-view="modern"][data-theme="light"] .pixel-stage {
@@ -1002,6 +1023,58 @@ main,
   align-content: center;
   background: transparent;
   box-shadow: none;
+}
+
+:root[data-view="modern"] .premium-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0.82;
+  pointer-events: none;
+}
+
+:root[data-view="modern"] .premium-scene[hidden],
+.premium-scene,
+.premium-orbit {
+  display: none;
+}
+
+:root[data-view="modern"] .premium-orbit {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  border: 1px solid rgba(101, 216, 255, 0.22);
+  border-radius: 999px;
+  filter: drop-shadow(0 0 18px rgba(124, 92, 255, 0.24));
+  pointer-events: none;
+  transform: rotate(-18deg);
+}
+
+:root[data-view="modern"] .premium-orbit--one {
+  right: 5%;
+  bottom: 15%;
+  width: min(32vw, 22rem);
+  height: min(32vw, 22rem);
+  border-top-color: rgba(249, 199, 79, 0.44);
+  animation: orbitDrift 12s ease-in-out infinite;
+}
+
+:root[data-view="modern"] .premium-orbit--two {
+  top: 12%;
+  left: 45%;
+  width: min(20vw, 13rem);
+  height: min(20vw, 13rem);
+  border-right-color: rgba(182, 108, 255, 0.5);
+  animation: orbitDrift 14s ease-in-out infinite reverse;
+}
+
+:root[data-view="modern"] .hero-copy,
+:root[data-view="modern"] .game-preview {
+  position: relative;
+  z-index: 2;
 }
 
 :root[data-view="modern"] .eyebrow,
@@ -1161,6 +1234,11 @@ main,
   box-shadow: 0 18px 54px var(--shadow);
 }
 
+:root[data-view="modern"] .avatar-image--modern {
+  animation: avatarFloat 5.6s ease-in-out infinite;
+  transform-origin: 50% 60%;
+}
+
 :root[data-view="modern"] .save-slot,
 :root[data-view="modern"] .stack,
 :root[data-view="modern"] .work-badge,
@@ -1239,6 +1317,35 @@ main,
 :root[data-view="modern"] .contact-card:hover {
   border-color: rgba(124, 92, 255, 0.38);
   transform: translateY(-3px);
+}
+
+:root[data-view="modern"] [data-tilt-card] {
+  transform:
+    perspective(1100px)
+    rotateX(var(--tilt-rx, 0deg))
+    rotateY(var(--tilt-ry, 0deg))
+    translate3d(0, var(--tilt-lift, 0), var(--tilt-tz, 0));
+  transform-style: preserve-3d;
+  transition:
+    border-color 180ms ease,
+    box-shadow 220ms ease,
+    transform 180ms ease;
+  will-change: transform;
+}
+
+:root[data-view="modern"] [data-tilt-card].is-tilting {
+  --tilt-lift: -2px;
+
+  border-color: rgba(101, 216, 255, 0.38);
+  box-shadow:
+    0 28px 82px rgba(3, 7, 18, 0.38),
+    0 0 32px rgba(124, 92, 255, 0.12);
+}
+
+:root[data-view="modern"][data-theme="light"] [data-tilt-card].is-tilting {
+  box-shadow:
+    0 28px 64px rgba(15, 23, 42, 0.12),
+    0 0 28px rgba(37, 99, 235, 0.1);
 }
 
 :root[data-view="modern"] .split-screen {
@@ -1472,6 +1579,30 @@ main,
 
 :root[data-view="modern"].reveal-ready .work-entry.reveal-item.is-visible {
   transform: translate3d(0, 0, 0) scale(1);
+}
+
+@keyframes avatarFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-0.4deg);
+  }
+
+  50% {
+    transform: translate3d(0, -0.55rem, 0) rotate(0.45deg);
+  }
+}
+
+@keyframes orbitDrift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-18deg) scale(1);
+    opacity: 0.64;
+  }
+
+  50% {
+    transform: translate3d(-0.9rem, 0.65rem, 0) rotate(-10deg) scale(1.035);
+    opacity: 0.9;
+  }
 }
 
 main {
@@ -3408,5 +3539,18 @@ app-pixel-heading {
   *::before,
   *::after {
     scroll-behavior: auto !important;
+  }
+
+  :root[data-view="modern"] body::before,
+  :root[data-view="modern"] .premium-scene,
+  :root[data-view="modern"] .premium-orbit {
+    display: none !important;
+  }
+
+  :root[data-view="modern"] .avatar-image--modern,
+  :root[data-view="modern"] [data-tilt-card] {
+    animation: none !important;
+    transform: none !important;
+    transition: none !important;
   }
 }

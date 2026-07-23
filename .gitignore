@@ -2,6 +2,7 @@
 
 # Compiled output
 /dist
+/static-site/vendor
 /tmp
 /out-tsc
 /bazel-out
